@@ -1,0 +1,22 @@
+# Fish shell compiled files
+*.o
+*.so
+*.dylib
+
+# Backup files
+*~
+*.bak
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+
+# Test directories
+test_*

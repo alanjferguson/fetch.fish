@@ -12,14 +12,14 @@ function fetch --description "Display system information"
     set -l magenta (set_color magenta)
     set -l red (set_color red)
     set -l yellow (set_color yellow)
-    
+
     # ASCII Art - Simple fish logo
     set -l ascii_art \
         "       $cyan><>$reset" \
         "     $cyan><))°>$reset" \
         "   $cyan><))°>$reset" \
         " $cyan><))°>$reset"
-    
+
     # Get system information
     set -l user (whoami)
     set -l host (hostname)
@@ -30,7 +30,7 @@ function fetch --description "Display system information"
     set -l terminal_info $TERM
     set -l cpu_info (get_cpu_info)
     set -l memory_info (get_memory_info)
-    
+
     # Calculate info panel width
     set -l info_lines \
         "$bold$user@$host$reset" \
@@ -41,7 +41,7 @@ function fetch --description "Display system information"
         "$blue Terminal:$reset $terminal_info" \
         "$blue CPU:$reset $cpu_info" \
         "$blue Memory:$reset $memory_info"
-    
+
     # Display ASCII art and info side by side
     for i in (seq 1 (count $ascii_art))
         if test $i -le (count $info_lines)
@@ -50,14 +50,14 @@ function fetch --description "Display system information"
             echo "$ascii_art[$i]"
         end
     end
-    
+
     # Display remaining info lines if any
     if test (count $info_lines) -gt (count $ascii_art)
         for i in (seq (math (count $ascii_art) + 1) (count $info_lines))
             echo "           $info_lines[$i]"
         end
     end
-    
+
     echo ""
 end
 
@@ -65,10 +65,10 @@ function get_os_info
     # Detect OS and distribution
     if test -f /etc/os-release
         grep '^PRETTY_NAME=' /etc/os-release | cut -d'"' -f2
-    else if test (uname) = "Darwin"
+    else if test (uname) = Darwin
         echo "macOS $(sw_vers -productVersion)"
-    else if test (uname) = "Linux"
-        echo "Linux"
+    else if test (uname) = Linux
+        echo Linux
     else
         uname -s
     end
@@ -81,7 +81,7 @@ function get_uptime
         set -l days (math -s0 "$uptime_seconds / 86400")
         set -l hours (math -s0 "($uptime_seconds % 86400) / 3600")
         set -l minutes (math -s0 "($uptime_seconds % 3600) / 60")
-        
+
         if test $days -gt 0
             echo "$days days, $hours hours, $minutes mins"
         else if test $hours -gt 0
@@ -101,10 +101,10 @@ function get_cpu_info
         set -l cpu_model (grep "model name" /proc/cpuinfo | head -1 | cut -d':' -f2 | string trim)
         set -l cpu_count (grep -c "^processor" /proc/cpuinfo)
         echo "$cpu_model ($cpu_count)"
-    else if test (uname) = "Darwin"
+    else if test (uname) = Darwin
         sysctl -n machdep.cpu.brand_string
     else
-        echo "Unknown"
+        echo Unknown
     end
 end
 
@@ -114,17 +114,17 @@ function get_memory_info
         set -l mem_total (grep "MemTotal:" /proc/meminfo | awk '{print $2}')
         set -l mem_available (grep "MemAvailable:" /proc/meminfo | awk '{print $2}')
         set -l mem_used (math "$mem_total - $mem_available")
-        
+
         set -l mem_total_mb (math -s0 "$mem_total / 1024")
         set -l mem_used_mb (math -s0 "$mem_used / 1024")
-        
+
         echo "$mem_used_mb MB / $mem_total_mb MB"
-    else if test (uname) = "Darwin"
+    else if test (uname) = Darwin
         # macOS memory calculation
         set -l mem_total (sysctl -n hw.memsize)
         set -l mem_total_mb (math -s0 "$mem_total / 1048576")
         echo "$mem_total_mb MB"
     else
-        echo "Unknown"
+        echo Unknown
     end
 end

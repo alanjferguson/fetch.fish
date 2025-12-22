@@ -66,7 +66,11 @@ function get_os_info
     if test -f /etc/os-release
         grep '^PRETTY_NAME=' /etc/os-release | cut -d'"' -f2
     else if test (uname) = Darwin
-        echo "macOS $(sw_vers -productVersion)"
+        if command -v sw_vers &>/dev/null
+            echo "macOS $(sw_vers -productVersion)"
+        else
+            echo Darwin
+        end
     else if test (uname) = Linux
         echo Linux
     else
@@ -90,8 +94,18 @@ function get_uptime
             echo "$minutes mins"
         end
     else
-        # Fallback for non-Linux systems
-        uptime | sed 's/.*up \([^,]*\),.*/\1/'
+        # Fallback for non-Linux systems - use uptime command if available
+        if command -v uptime &>/dev/null
+            set -l uptime_str (uptime | string trim)
+            # Try to extract the uptime portion using string manipulation
+            if string match -qr 'up\s+(.+?),\s+\d+\s+user' $uptime_str
+                echo (string match -r 'up\s+(.+?),\s+\d+\s+user' $uptime_str)[2]
+            else
+                echo Unknown
+            end
+        else
+            echo Unknown
+        end
     end
 end
 

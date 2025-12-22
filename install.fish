@@ -14,17 +14,52 @@ mkdir -p "$fish_config_dir/conf.d"
 
 # Copy functions
 echo "Installing functions..."
-cp "$install_dir/functions/fetch.fish" "$fish_config_dir/functions/"
-cp "$install_dir/functions/fish_greeting.fish" "$fish_config_dir/functions/"
+if test -f "$install_dir/functions/fetch.fish"
+    cp "$install_dir/functions/fetch.fish" "$fish_config_dir/functions/"
+    or begin
+        echo "Error: Failed to copy fetch.fish"
+        exit 1
+    end
+else
+    echo "Error: Source file functions/fetch.fish not found"
+    exit 1
+end
+
+if test -f "$install_dir/functions/fish_greeting.fish"
+    cp "$install_dir/functions/fish_greeting.fish" "$fish_config_dir/functions/"
+    or begin
+        echo "Error: Failed to copy fish_greeting.fish"
+        exit 1
+    end
+else
+    echo "Error: Source file functions/fish_greeting.fish not found"
+    exit 1
+end
 
 # Copy completions
 echo "Installing completions..."
-cp "$install_dir/completions/fetch.fish" "$fish_config_dir/completions/"
+if test -f "$install_dir/completions/fetch.fish"
+    cp "$install_dir/completions/fetch.fish" "$fish_config_dir/completions/"
+    or begin
+        echo "Error: Failed to copy completions"
+        exit 1
+    end
+else
+    echo "Error: Source file completions/fetch.fish not found"
+    exit 1
+end
 
 # Copy configuration
 echo "Installing configuration..."
 if not test -f "$fish_config_dir/conf.d/fetch.fish"
-    cp "$install_dir/conf.d/fetch.fish" "$fish_config_dir/conf.d/"
+    if test -f "$install_dir/conf.d/fetch.fish"
+        cp "$install_dir/conf.d/fetch.fish" "$fish_config_dir/conf.d/"
+        or begin
+            echo "Warning: Failed to copy configuration file"
+        end
+    else
+        echo "Warning: Source file conf.d/fetch.fish not found"
+    end
 end
 
 echo ""

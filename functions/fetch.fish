@@ -22,7 +22,7 @@ function fetch --description "Display system information"
     
     # Get system information
     set -l user (whoami)
-    set -l host (hostname)
+    set -l host (get_hostname)
     set -l os_info (get_os_info)
     set -l kernel (uname -r)
     set -l uptime_info (get_uptime)
@@ -61,6 +61,16 @@ function fetch --description "Display system information"
     end
     
     echo ""
+end
+
+function get_hostname
+    if command -q hostname
+    	hostname
+    else if test -f /etc/hostname
+    	cat /etc/hostname
+    else
+    	echo "Unknown"
+    end
 end
 
 function get_os_info
